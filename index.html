@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiGo</title>
+
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#10a968">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ServiGo">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="./icons/servigo-192.png">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<div class="app">
+    <section id="inicio" class="tela ativa">
+        <h1>Servi<span>Go</span></h1>
+        <p>Gestão inteligente de serviços e entregas</p>
+        <button onclick="abrir('loginEmpresa')">🏢 Sou Empresa</button>
+        <button onclick="abrir('loginEntregador')" class="cinza">🛵 Sou Entregador</button>
+    </section>
+
+    <section id="loginEmpresa" class="tela">
+        <h2>🔐 Login da Empresa</h2>
+        <form onsubmit="loginEmpresa(event)">
+            <label>E-mail<input type="email" id="emailEmpresa" placeholder="Seu e-mail" required></label>
+            <label>Senha<input type="password" id="senhaEmpresa" placeholder="Sua senha" required></label>
+            <button type="submit">Entrar</button>
+        </form>
+        <button onclick="abrir('inicio')" class="voltar">← Voltar</button>
+    </section>
+
+    <section id="loginEntregador" class="tela">
+        <h2>🛵 Acesso do Entregador</h2>
+        <form onsubmit="loginEntregador(event)">
+            <label>E-mail<input type="email" id="loginEntEmail" autocomplete="email" required></label>
+            <label>Senha<input type="password" id="loginEntSenha" autocomplete="current-password" required></label>
+            <button type="submit">Entrar</button>
+        </form>
+        <button onclick="abrir('cadastroEntregador')" class="cinza">Criar cadastro de entregador</button>
+        <button onclick="abrir('inicio')" class="voltar">← Voltar</button>
+    </section>
+
+    <section id="cadastroEntregador" class="tela">
+        <h2>📝 Cadastro de Entregador</h2>
+        <p>Seu cadastro será analisado antes de liberar o acesso aos serviços.</p>
+        <form id="formCadastroEntregador" onsubmit="cadastrarEntregador(event)">
+            <h3>Dados de acesso e pessoais</h3>
+            <label>Nome completo<input id="cadNome" required autocomplete="name"></label>
+            <label>E-mail<input id="cadEmail" type="email" required autocomplete="email"></label>
+            <label>Senha (mínimo 6 caracteres)<input id="cadSenha" type="password" minlength="6" required autocomplete="new-password"></label>
+            <label>Telefone<input id="cadTelefone" type="tel" required></label>
+            <label>CPF<input id="cadCpf" required inputmode="numeric"></label>
+            <label>Veículo<input id="cadVeiculo" placeholder="Ex.: Moto, carro, bicicleta" required></label>
+            <label>Placa (se aplicável)<input id="cadPlaca"></label>
+
+            <h3>Endereço</h3>
+            <label>CEP<input id="cadCep" required autocomplete="postal-code"></label>
+            <label>Logradouro<input id="cadLogradouro" required autocomplete="address-line1"></label>
+            <label>Número<input id="cadNumero" required></label>
+            <label>Complemento<input id="cadComplemento"></label>
+            <label>Bairro<input id="cadBairro" required></label>
+            <label>Cidade<input id="cadCidade" required autocomplete="address-level2"></label>
+            <label>Estado (UF)<input id="cadUf" maxlength="2" required></label>
+
+            <h3>Documentos</h3>
+            <label>Documento de identificação (imagem ou PDF)<input id="cadDocumento" type="file" accept="image/*,.pdf" required></label>
+            <label>Comprovante de residência (imagem ou PDF)<input id="cadComprovante" type="file" accept="image/*,.pdf" required></label>
+
+            <h3>Dados bancários</h3>
+            <label>Banco<input id="cadBanco" required></label>
+            <label>Agência<input id="cadAgencia" required></label>
+            <label>Conta<input id="cadConta" required></label>
+            <label>Tipo de conta
+                <select id="cadTipoConta" required>
+                    <option value="">Selecione</option>
+                    <option value="corrente">Corrente</option>
+                    <option value="poupanca">Poupança</option>
+                    <option value="pagamento">Conta de pagamento</option>
+                </select>
+            </label>
+            <label>Chave Pix<input id="cadPix" required></label>
+            <button type="submit">Enviar cadastro para análise</button>
+        </form>
+        <button onclick="abrir('loginEntregador')" class="voltar">← Já tenho conta / Voltar</button>
+    </section>
+
+    <button onclick="abrir('consultaServicos')" class="cinza">
+
+<section id="empresa" class="tela">
+    <h2>🏢 Painel da Empresa</h2>
+
+    <div class="cartoes">
+        <div>
+            <strong id="ativos">0</strong>
+            <small>Serviços ativos</small>
+        </div>
+        <div>
+            <strong id="totalEntregadores">0</strong>
+            <small>Entregadores aprovados</small>
+        </div>
+        <div>
+            <strong id="concluidos">0</strong>
+            <small>Concluídos</small>
+        </div>
+    </div>
+
+    <button onclick="abrir('novo')">➕ Novo Serviço</button>
+
+    <button onclick="abrir('consultaServicos')" class="cinza">
+        📋 Consultar serviços
+    </button>
+
+    <button onclick="abrir('mapa')" class="cinza">
+        🗺️ Acompanhar serviços
+    </button>
+
+    <button onclick="sairConta()" class="cinza">Sair da conta</button>
+
+    <button onclick="abrir('inicio')" class="voltar">← Voltar</button>
+</section>
+
+
+<section id="consultaServicos" class="tela">
+    <h2>📋 Consultar serviços</h2>
+
+    <p>Consulte os serviços cadastrados pela empresa.</p>
+
+    <div id="listaServicos"></div>
+
+    <button onclick="abrir('empresa')" class="voltar">
+        ← Voltar ao painel
+    </button>
+</section>
+
+    <section id="mapa" class="tela">
+        <h2>🗺️ Acompanhar serviços</h2>
+        <div id="map"></div>
+        <button onclick="abrir('empresa')" class="voltar">← Voltar</button>
+    </section>
+
+    <section id="novo" class="tela">
+        <h2>➕ Novo Serviço</h2>
+        <form onsubmit="criarServico(event)">
+            <label>Número do serviço<input id="numero" placeholder="Ex.: 1001" required></label>
+            <label>Endereço de coleta<input id="coleta" placeholder="Onde o entregador deve buscar?" required></label>
+            <label>Endereço de destino<input id="destino" placeholder="Onde será entregue?" required></label>
+            <label>Destinatário<input id="destinatario" placeholder="Nome do destinatário" required></label>
+            <label>Entregador
+                <select id="entregadorSelecionado">
+                    <option value="">Sem atribuição (entregador aprovado poderá aceitar)</option>
+                </select>
+            </label>
+            <label>Observações<textarea id="observacoes"></textarea></label>
+            <button type="submit">Criar Serviço</button>
+        </form>
+        <button onclick="abrir('empresa')" class="voltar">← Voltar</button>
+    </section>
+
+    <section id="painelEntregador" class="tela">
+        <h2>🛵 Painel do Entregador</h2>
+        <div class="disponivel">🟢 Acesso liberado para entregador aprovado</div>
+        <div id="servico" class="servico">Carregando serviço...</div>
+        <button id="btnAceitar" onclick="aceitar()">Aceitar Serviço</button>
+        <button id="btnIniciar" onclick="iniciar()" class="cinza">▶️ Iniciar Serviço</button>
+        <button id="btnFinalizar" onclick="finalizar()" class="finalizar">✅ Finalizar Serviço</button>
+        <button onclick="sairConta()" class="cinza">Sair da conta</button>
+        <button onclick="abrir('inicio')" class="voltar">← Voltar</button>
+    </section>
+
+    <section id="admin" class="tela">
+        <h2>🛡️ Administração</h2>
+        <p>Analise os cadastros antes de liberar o acesso aos serviços.</p>
+        <div id="listaPendentes"></div>
+        <button onclick="carregarCadastrosPendentes()" class="cinza">Atualizar lista</button>
+        <button onclick="sairConta()" class="cinza">Sair da conta</button>
+        <button onclick="abrir('inicio')" class="voltar">← Voltar</button>
+    </section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js")
+            .then(function () {
+                console.log("✅ Service Worker registrado!");
+            })
+            .catch(function (erro) {
+                console.error("Erro ao registrar Service Worker:", erro);
+            });
+    });
+}
+</script>
+
+</body>
+</html>

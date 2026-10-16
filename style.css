@@ -1,0 +1,31 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #eef2f4; color: #17202a; }
+.app { max-width: 480px; min-height: 100vh; margin: auto; background: white; padding: 25px; }
+.tela { display: none; min-height: auto; }
+.tela.ativa { display: block; }
+#inicio { text-align: center; padding-top: 100px; }
+h1 { font-size: 55px; margin-bottom: 5px; }
+h1 span { color: #10a968; }
+h2 { margin-bottom: 25px; }
+h3 { margin-top: 26px; padding-bottom: 8px; border-bottom: 1px solid #e3e8eb; }
+p { color: #68747b; margin-bottom: 22px; line-height: 1.5; }
+button { width: 100%; border: none; padding: 16px; margin: 8px 0; border-radius: 12px; background: #10a968; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+button:hover { opacity: .9; }
+.cinza, .voltar { background: #e8edef; color: #17202a; }
+.finalizar { background: #176b47; }
+.cartoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+.cartoes div { background: #f5f7f8; padding: 15px 5px; text-align: center; border-radius: 12px; }
+.cartoes strong { display: block; font-size: 25px; color: #10a968; }
+.cartoes small { color: #68747b; font-size: 11px; }
+label { display: block; font-weight: bold; margin: 15px 0; line-height: 1.4; }
+input, select, textarea { display: block; width: 100%; padding: 13px; margin-top: 7px; border: 1px solid #ccd4d8; border-radius: 10px; font-size: 15px; background: white; color: #17202a; }
+input[type=file] { font-size: 13px; padding: 10px; }
+textarea { min-height: 90px; resize: vertical; }
+.disponivel { background: #e5f7ee; color: #087649; padding: 13px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
+.servico { background: #f5f7f8; border-radius: 12px; padding: 18px; margin-bottom: 15px; line-height: 1.7; overflow-wrap: anywhere; }
+#map { height: 400px; width: 100%; border-radius: 12px; margin-top: 15px; }
+#btnAceitar, #btnIniciar, #btnFinalizar { display: none; }
+#empresa button {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
