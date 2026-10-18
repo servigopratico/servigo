@@ -28,7 +28,13 @@
         <h2>🔐 Login da Empresa</h2>
         <form onsubmit="loginEmpresa(event)">
             <label>E-mail<input type="email" id="emailEmpresa" placeholder="Seu e-mail" required></label>
-            <label>Senha<input type="password" id="senhaEmpresa" placeholder="Sua senha" required></label>
+         
+<label>Senha</label>
+<div class="campo-senha">
+  <input type="password" id="senhaEmpresa" placeholder="Sua senha" required>
+  <button type="button" onclick="alternarSenha('senhaEmpresa', this)" aria-label="Mostrar senha">👁️</button>
+</div>
+
             <button type="submit">Entrar</button>
         </form>
         <button onclick="abrir('inicio')" class="voltar">← Voltar</button>
