@@ -1252,3 +1252,21 @@ async function sairConta() {
 document.addEventListener("DOMContentLoaded", function() {
     atualizarBotoesServico(null);
 });
+
+function alternarSenha(id, botao) {
+    const campo = document.getElementById(id);
+
+    if (!campo) return;
+
+    const mostrar = campo.type === "password";
+
+    campo.type = mostrar ? "text" : "password";
+
+    botao.textContent = mostrar ? "🙈" : "👁️";
+
+    botao.setAttribute(
+        "aria-label",
+        mostrar ? "Ocultar senha" : "Mostrar senha"
+    );
+}
+
