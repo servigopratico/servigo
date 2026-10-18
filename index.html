@@ -44,7 +44,13 @@
         <h2>🛵 Acesso do Entregador</h2>
         <form onsubmit="loginEntregador(event)">
             <label>E-mail<input type="email" id="loginEntEmail" autocomplete="email" required></label>
-            <label>Senha<input type="password" id="loginEntSenha" autocomplete="current-password" required></label>
+        
+<label>Senha</label>
+<div class="campo-senha">
+    <input type="password" id="loginEntSenha" autocomplete="current-password" required>
+    <button type="button" onclick="alternarSenha('loginEntSenha', this)" aria-label="Mostrar senha">👁️</button>
+</div>
+
             <button type="submit">Entrar</button>
         </form>
         <button onclick="abrir('cadastroEntregador')" class="cinza">Criar cadastro de entregador</button>
