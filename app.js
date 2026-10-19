@@ -846,9 +846,15 @@ async function cadastrarEntregador(event) {
 
     let usuarioCriado = null;
     try {
-        const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
-            password: senha
+       
+const { data, error } = await supabaseClient.auth.signUp({
+    email: email,
+    password: senha,
+    options: {
+        emailRedirectTo: "https://servigopratico.github.io/servigo/"
+    }
+});
+
         });
         if (error) throw error;
         usuarioCriado = data.user;
