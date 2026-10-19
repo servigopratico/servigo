@@ -64,7 +64,11 @@
             <h3>Dados de acesso e pessoais</h3>
             <label>Nome completo<input id="cadNome" required autocomplete="name"></label>
             <label>E-mail<input id="cadEmail" type="email" required autocomplete="email"></label>
-            <label>Senha (mínimo 6 caracteres)<input id="cadSenha" type="password" minlength="6" required autocomplete="new-password"></label>
+            <label>Senha (mínimo 6 caracteres)</label>
+<div class="campo-senha">
+    <input id="cadSenha" type="password" minlength="6" required autocomplete="new-password">
+    <button type="button" onclick="alternarSenha('cadSenha', this)" aria-label="Mostrar senha">👁️</button>
+</div>
             <label>Telefone<input id="cadTelefone" type="tel" required></label>
             <label>CPF<input id="cadCpf" required inputmode="numeric"></label>
             <label>Veículo<input id="cadVeiculo" placeholder="Ex.: Moto, carro, bicicleta" required></label>
