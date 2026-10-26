@@ -959,8 +959,10 @@ async function loginEntregador(event) {
     abrir("painelEntregador");
 }
 
+
 async function verificarAcessoEntregador() {
     const { data: sessao } = await supabaseClient.auth.getSession();
+
     if (!sessao.session) {
         alert("Entre com seu e-mail e senha para acessar o painel do entregador.");
         abrir("loginEntregador");
@@ -973,10 +975,15 @@ async function verificarAcessoEntregador() {
         .eq("usuario_id", sessao.session.user.id)
         .maybeSingle();
 
-    if (error || !perfil) {
-        alert("Não encontramos um cadastro de entregador para esta conta. Faça seu cadastro ou entre com a conta correta.");
-        await supabaseClient.auth.signOut();
-        abrir("loginEntregador");
+    if (error) {
+        console.error("Erro ao consultar cadastro do entregador:", error);
+        alert("Não foi possível consultar seu cadastro. Tente novamente.");
+        return;
+    }
+
+    if (!perfil) {
+        alert("Sua conta foi confirmada, mas falta concluir o cadastro de entregador. Preencha o formulário de cadastro usando esta mesma conta.");
+        abrir("cadastroEntregador");
         return;
     }
 
@@ -984,11 +991,16 @@ async function verificarAcessoEntregador() {
         const detalhe = perfil.status_aprovacao === "rejeitado"
             ? "\nMotivo: " + (perfil.motivo_rejeicao || "Não informado.")
             : "";
+
         alert("Seu cadastro ainda não foi aprovado. Você não pode acessar serviços." + detalhe);
         await supabaseClient.auth.signOut();
         abrir("loginEntregador");
         return;
     }
+
+    await carregarServicoDoEntregador(perfil.id);
+}
+
 
     await carregarServicoDoEntregador(perfil.id);
 }
