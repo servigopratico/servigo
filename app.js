@@ -845,8 +845,6 @@ async function cadastrarEntregador(event) {
     }
 
     let usuarioCriado = null;
- 
-    let usuarioCriado = null;
 
     try {
         const { data: sessaoAtual, error: erroSessao } =
