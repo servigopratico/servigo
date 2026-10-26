@@ -1019,10 +1019,6 @@ async function verificarAcessoEntregador() {
     await carregarServicoDoEntregador(perfil.id);
 }
 
-
-    await carregarServicoDoEntregador(perfil.id);
-}
-
 async function carregarServicoDoEntregador(entregadorId) {
     const { data, error } = await supabaseClient
         .from("servicos")
