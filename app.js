@@ -845,29 +845,49 @@ async function cadastrarEntregador(event) {
     }
 
     let usuarioCriado = null;
+ 
+    let usuarioCriado = null;
+
     try {
-        const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
-            password: senha,
-            options: {
-                emailRedirectTo: "https://servigopratico.github.io/servigo/"
+        const { data: sessaoAtual, error: erroSessao } =
+            await supabaseClient.auth.getSession();
+
+        if (erroSessao) throw erroSessao;
+
+        if (sessaoAtual.session) {
+            // A conta já foi confirmada e o usuário está autenticado.
+            // Aproveita essa conta em vez de tentar criar outra.
+            usuarioCriado = sessaoAtual.session.user;
+        } else {
+            // Ainda não está autenticado: cria a conta normalmente.
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: senha,
+                options: {
+                    emailRedirectTo: "https://servigopratico.github.io/servigo/"
+                }
+            });
+
+            if (error) throw error;
+
+            usuarioCriado = data.user;
+
+            if (!usuarioCriado) {
+                throw new Error(
+                    "O Supabase não retornou o usuário. Confira as configurações de autenticação."
+                );
             }
-        });
 
-        if (error) throw error;
-        usuarioCriado = data.user;
-
-   ;
-        usuarioCriado = data.user;
-
-        if (!usuarioCriado) {
-            throw new Error("O Supabase não retornou o usuário. Confira as configurações de autenticação.");
+            if (!data.session) {
+                alert(
+                    "Sua conta foi criada. Confirme o e-mail e entre no ServiGo. " +
+                    "Depois, abra novamente o cadastro de entregador e preencha os dados e documentos."
+                );
+                return;
+            }
         }
 
-        if (!data.session) {
-            alert("Sua conta foi criada, mas o Supabase exige confirmação de e-mail antes de entrar. Confirme o e-mail e depois faça login. Se a confirmação estiver desativada, tente entrar normalmente.");
-            return;
-        }
+        // Continua abaixo com o salvamento do cadastro e dos documentos.
 
         const { data: cadastro, error: erroCadastro } = await supabaseClient
             .from("entregadores")
