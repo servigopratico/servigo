@@ -564,7 +564,7 @@ async function loginEmpresa(event) {
 
     event.preventDefault();
 
-    var email = document.getElementById("emailEmpresa").value;	
+    var email = document.getElementById("emailEmpresa").value;
     var senha = document.getElementById("senhaEmpresa").value;
 
     var resultado = await supabaseClient.auth.signInWithPassword({
@@ -583,184 +583,26 @@ async function loginEmpresa(event) {
 
     alert("✅ Login realizado com sucesso!");
 
+    // Verifica se o usuário também é administrador
+    const { data: admin, error: erroAdmin } = await supabaseClient
+        .from("administradores")
+        .select("usuario_id")
+        .eq("usuario_id", resultado.data.user.id)
+        .maybeSingle();
+
+    if (erroAdmin) {
+        console.error("Erro ao verificar administrador:", erroAdmin);
+    }
+
+    if (admin) {
+        abrir("admin");
+        return;
+    }
+
+    // Se não for administrador, mantém o acesso normal da empresa
     abrir("empresa");
 }
 
-testarSupabase();
-async function obterEmpresaLogada() {
-
-    const {
-        data: { user },
-        error: erroUsuario
-    } = await supabaseClient.auth.getUser();
-
-    if (erroUsuario || !user) {
-        console.error("Usuário não autenticado:", erroUsuario);
-        return null;
-    }
-
-    const { data: empresa, error: erroEmpresa } =
-        await supabaseClient
-            .from("empresas")
-            .select("id")
-            .eq("usuario_id", user.id)
-            .single();
-
-    if (erroEmpresa) {
-      console.error("ERRO COMPLETO EMPRESA:", JSON.stringify(erroEmpresa, null, 2));
-    }
-
-    console.log("✅ Empresa logada:", empresa);
-
-    return empresa;
-}
-
-obterEmpresaLogada();
-
-var mapa = null;
-
-function inicializarMapa() {
-    var elemento = document.getElementById("map");
-
-    if (!elemento || typeof L === "undefined") {
-        console.error("Mapa ou Leaflet não disponível.");
-        return;
-    }
-
-    if (mapa) {
-        mapa.invalidateSize();
-        return;
-    }
-
-    mapa = L.map(elemento).setView(
-        [-23.5505, -46.6333],
-        11
-    );
-
-    L.tileLayer(
-        "https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=ifOIDxQkpaUlCvEXiSa4",
-        {
-            attribution:
-                '&copy; <a href="https://www.maptiler.com/">MapTiler</a> &copy; OpenStreetMap contributors',
-            maxZoom: 19
-        }
-    ).addTo(mapa);
-}
-
-window.inicializarMapa = inicializarMapa;
-
-async function carregarServicosNoMapa() {
-
-    console.log("Carregando serviços no mapa...");
-
-    const { data: servicos, error } = await supabaseClient
-        .from("servicos")
-        .select(`
-            id,
-            numero,
-            endereco_coleta,
-            endereco_entrega,
-            latitude_coleta,
-            longitude_coleta,
-            latitude_entrega,
-            longitude_entrega,
-            status_id
-     
-        `)
-        .not("status_id", "in", "(4,5)");
-
-    if (error) {
-        console.error("Erro ao carregar serviços para o mapa:", error);
-        return;
-    }
-
-    console.log("Serviços encontrados para o mapa:", servicos);
-
-    for (const servico of servicos) {
-
-        if (!servico.endereco_coleta) {
-            continue;
-        }
-
-        if (
-            servico.latitude_coleta != null &&
-            servico.longitude_coleta != null
-        ) {
-            L.marker([
-                Number(servico.latitude_coleta),
-                Number(servico.longitude_coleta)
-            ])
-            .addTo(mapa)
-            .bindPopup("Serviço #" + servico.numero);
-
-            continue;
-        }
-
-        try {
-
-            const endereco = servico.endereco_coleta +
-                ", São Paulo, SP, Brasil";
-
-            const url =
-                "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" +
-                encodeURIComponent(endereco);
-
-            const resposta = await fetch(url);
-            const resultados = await resposta.json();
-
-            if (!resultados.length) {
-                console.warn(
-                    "Endereço não localizado:",
-                    servico.endereco_coleta
-                );
-                continue;
-            }
-
-            const latitude = Number(resultados[0].lat);
-            const longitude = Number(resultados[0].lon);
-
-          
-L.marker([latitude, longitude])
-    .addTo(mapa)
-    .bindPopup(
-        "<strong>Serviço #" + servico.numero + "</strong>" +
-        "<br><br><strong>Coleta:</strong> " +
-        (servico.endereco_coleta || "Não informado") +
-        "<br><br><strong>Entrega:</strong> " +
-        (servico.endereco_entrega || "Não informado")
-    );
-
-            const { error: erroAtualizacao } = await supabaseClient
-                .from("servicos")
-                .update({
-                    latitude_coleta: latitude,
-                    longitude_coleta: longitude
-                })
-                .eq("id", servico.id);
-
-            if (erroAtualizacao) {
-                console.error(
-                    "Erro ao salvar coordenadas:",
-                    erroAtualizacao
-                );
-            } else {
-                console.log(
-                    "Coordenadas salvas para o serviço:",
-                    servico.numero
-                );
-            }
-
-        } catch (erro) {
-            console.error(
-                "Erro ao localizar endereço:",
-                servico.endereco_coleta,
-                erro
-            );
-        }
-
-    }
-
-}
 
 /* ===== MÓDULO DE CADASTRO, LOGIN E APROVAÇÃO DE ENTREGADORES ===== */
 
