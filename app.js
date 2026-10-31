@@ -37,29 +37,6 @@ window.atualizarBotoesServico = function(status) {
 supabaseClient.auth.getSession().then(function(resultado) {
     console.log("Sessão atual:", resultado.data.session);
 });
-var servicoAtual = null;
-window.atualizarBotoesServico = function(status) {
-    console.log("Atualizando botões. Status:", status);
-
-    var btnAceitar = document.getElementById("btnAceitar");
-    var btnIniciar = document.getElementById("btnIniciar");
-    var btnFinalizar = document.getElementById("btnFinalizar");
-
-    if (btnAceitar) {
-        btnAceitar.style.display =
-            status === "Aguardando aceite" ? "block" : "none";
-    }
-
-    if (btnIniciar) {
-        btnIniciar.style.display =
-            status === "Aceito" ? "block" : "none";
-    }
-
-    if (btnFinalizar) {
-        btnFinalizar.style.display =
-            status === "Em andamento" ? "block" : "none";
-    }
-};
 
 console.log("CHEGUEI ANTES DA FUNÇÃO ABRIR");
 
@@ -68,24 +45,43 @@ function abrir(tela) {
         item.classList.remove("ativa");
     });
 
-    var telaSelecionada = document.getElementById(tela);
-    if (telaSelecionada) {
-        telaSelecionada.classList.add("ativa");
+    const destino = document.getElementById(tela);
+    if (destino) {
+        destino.classList.add("ativa");
+    }
+
+    if (tela === "empresa") {
+        atualizarEmpresa();
+        carregarEntregadoresAprovados();
     }
 
     if (tela === "painelEntregador") {
-        console.log("Painel do entregador aberto");
-        carregarServico();
-        console.log("Serviço atual:", servicoAtual);
-        atualizarBotoesServico(servicoAtual ? servicoAtual.status : null);
+        verificarAcessoEntregador();
+    }
+
+    if (tela === "admin") {
+        carregarCadastrosPendentes();
     }
 
     if (tela === "mapa") {
         console.log("Mapa aberto");
+
+        if (typeof L === "undefined") {
+            console.error("Leaflet não foi carregado.");
+            alert("O mapa não foi carregado. Confira a conexão com a internet.");
+            return;
+        }
+
         inicializarMapa();
-        carregarServicosNoMapa();
-        setTimeout(function() {
-            if (mapa) mapa.invalidateSize();
+
+        if (!mapa) {
+            console.error("Não foi possível inicializar o mapa.");
+            return;
+        }
+
+        setTimeout(async function() {
+            mapa.invalidateSize();
+            await carregarServicosNoMapa();
         }, 300);
     }
 }
@@ -615,54 +611,6 @@ function mostrarMensagem(texto) {
     alert(texto);
 }
 
-window.abrir = function(tela) {
-    document.querySelectorAll(".tela").forEach(function(item) {
-        item.classList.remove("ativa");
-    });
-
-    const destino = document.getElementById(tela);
-
-    if (destino) {
-        destino.classList.add("ativa");
-    }
-
-    if (tela === "empresa") {
-        atualizarEmpresa();
-        carregarEntregadoresAprovados();
-    }
-
-    if (tela === "painelEntregador") {
-        verificarAcessoEntregador();
-    }
-
-    if (tela === "admin") {
-        carregarCadastrosPendentes();
-    }
-
-
-if (tela === "mapa") {
-    console.log("Mapa aberto");
-
-    if (typeof L === "undefined") {
-        console.error("Leaflet não foi carregado.");
-        alert("O mapa não foi carregado. Confira a conexão com a internet.");
-        return;
-    }
-
-    inicializarMapa();
-
-    if (!mapa) {
-        console.error("Não foi possível inicializar o mapa.");
-        return;
-    }
-
-    setTimeout(async function() {
-        mapa.invalidateSize();
-        await carregarServicosNoMapa();
-    }, 300);
-}
-
-};
 async function cadastrarEntregador(event) {
     event.preventDefault();
 
@@ -1144,4 +1092,3 @@ function alternarSenha(id, botao) {
         mostrar ? "Ocultar senha" : "Mostrar senha"
     );
 }
-
